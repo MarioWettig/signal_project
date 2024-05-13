@@ -5,7 +5,7 @@ import java.util.Random;
 import com.cardio_generator.outputs.OutputStrategy;
 
 /**
- *ciao
+ *
  * this class implements PatientDataGenerator and therefore it is a generator
  * It simulates alerts being triggered and resolved, and outputs them using the provided OutputStrategy.
  *
