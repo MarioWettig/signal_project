@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * and demonstration purposes in various environments.
  *
  *
- * @author: Mario Wettig
+ * @author: mariowettig
  */
 public class HealthDataSimulator {
 
@@ -173,6 +173,8 @@ public class HealthDataSimulator {
             scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
         }
     }
+
+
 
     /**
      * Schedules a single task with a fixed rate of execution.
