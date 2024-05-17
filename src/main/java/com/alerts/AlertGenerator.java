@@ -2,6 +2,9 @@ package com.alerts;
 
 import com.data_management.DataStorage;
 import com.data_management.Patient;
+import com.data_management.PatientRecord;
+
+import java.util.List;
 
 /**
  * The {@code AlertGenerator} class is responsible for monitoring patient data
@@ -48,5 +51,6 @@ public class AlertGenerator {
      */
     private void triggerAlert(Alert alert) {
         // Implementation might involve logging the alert or notifying staff
+        System.out.println("alert for patient "+alert.getPatientId()+": "+alert.getCondition()+" at time: "+alert.getTimestamp());
     }
 }

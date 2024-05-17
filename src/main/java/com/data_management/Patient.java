@@ -63,4 +63,7 @@ public class Patient {
         return records;
     }
 
+    public int getPatientId() {
+        return patientId;
+    }
 }
