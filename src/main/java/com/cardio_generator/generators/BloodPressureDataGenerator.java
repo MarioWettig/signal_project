@@ -2,7 +2,9 @@ package com.cardio_generator.generators;
 
 import java.util.Random;
 
+import com.cardio_generator.outputs.ConsoleOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
+import com.data_management.DataStorage;
 
 public class BloodPressureDataGenerator implements PatientDataGenerator {
     private static final Random random = new Random();
@@ -10,7 +12,9 @@ public class BloodPressureDataGenerator implements PatientDataGenerator {
     private int[] lastSystolicValues;
     private int[] lastDiastolicValues;
 
-    public BloodPressureDataGenerator(int patientCount) {
+    private DataStorage storage;
+
+    public BloodPressureDataGenerator(int patientCount, DataStorage storage) {
         lastSystolicValues = new int[patientCount + 1];
         lastDiastolicValues = new int[patientCount + 1];
 
@@ -19,6 +23,8 @@ public class BloodPressureDataGenerator implements PatientDataGenerator {
             lastSystolicValues[i] = 110 + random.nextInt(20); // Random baseline between 110 and 130
             lastDiastolicValues[i] = 70 + random.nextInt(15); // Random baseline between 70 and 85
         }
+
+        this.storage = storage;
     }
 
     @Override
@@ -34,9 +40,16 @@ public class BloodPressureDataGenerator implements PatientDataGenerator {
             lastSystolicValues[patientId] = newSystolicValue;
             lastDiastolicValues[patientId] = newDiastolicValue;
 
-            outputStrategy.output(patientId, System.currentTimeMillis(), "SystolicPressure",
+            long time = System.currentTimeMillis();
+
+            if( outputStrategy instanceof ConsoleOutputStrategy) {
+                storage.addPatientData(patientId, newSystolicValue, "SystolicPressure", time);
+                storage.addPatientData(patientId, newDiastolicValue, "DiastolicPressure", time);
+            }
+
+            outputStrategy.output(patientId, time, "SystolicPressure",
                     Double.toString(newSystolicValue));
-            outputStrategy.output(patientId, System.currentTimeMillis(), "DiastolicPressure",
+            outputStrategy.output(patientId, time, "DiastolicPressure",
                     Double.toString(newDiastolicValue));
         } catch (Exception e) {
             System.err.println("An error occurred while generating blood pressure data for patient " + patientId);

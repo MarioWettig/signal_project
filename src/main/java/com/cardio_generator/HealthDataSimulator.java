@@ -14,6 +14,8 @@ import com.cardio_generator.outputs.FileOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
+import com.data_management.DataStorage;
+import com.data_management.TextFileReader;
 
 import java.util.Collections;
 import java.util.List;
@@ -34,7 +36,7 @@ import java.util.ArrayList;
  * and demonstration purposes in various environments.
  *
  *
- * @author: Mario Wettig
+ * @author: mariowettig
  */
 public class HealthDataSimulator {
 
@@ -42,6 +44,11 @@ public class HealthDataSimulator {
     private static ScheduledExecutorService scheduler;
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
+
+
+    private static DataStorage storage = new DataStorage();
+    private static TextFileReader reader = new TextFileReader("");
+    private static String pathBase = "src/assets/DataFiles/";
 
 
     public static void main(String[] args) throws IOException {
@@ -54,6 +61,7 @@ public class HealthDataSimulator {
 
         scheduleTasksForPatients(patientIds);
     }
+
 
     /**
      * Parses the command line arguments to set simulation parameters.
@@ -72,8 +80,7 @@ public class HealthDataSimulator {
                         try {
                             patientCount = Integer.parseInt(args[++i]);
                         } catch (NumberFormatException e) {
-                            System.err
-                                    .println("Error: Invalid number of patients. Using default value: " + patientCount);
+                            System.err.println("Error: Invalid number of patients. Using default value: " + patientCount);
                         }
                     }
                     break;
@@ -83,12 +90,13 @@ public class HealthDataSimulator {
                         if (outputArg.equals("console")) {
                             outputStrategy = new ConsoleOutputStrategy();
                         } else if (outputArg.startsWith("file:")) {
-                            String baseDirectory = outputArg.substring(5);
+                            String baseDirectory = pathBase + outputArg.substring(5);
                             Path outputPath = Paths.get(baseDirectory);
                             if (!Files.exists(outputPath)) {
                                 Files.createDirectories(outputPath);
                             }
                             outputStrategy = new FileOutputStrategy(baseDirectory);
+                            reader.setFilePath(baseDirectory);
                         } else if (outputArg.startsWith("websocket:")) {
                             try {
                                 int port = Integer.parseInt(outputArg.substring(10));
@@ -159,11 +167,12 @@ public class HealthDataSimulator {
      * @param patientIds List of patient IDs for whom to schedule tasks.
      */
     private static void scheduleTasksForPatients(List<Integer> patientIds) {
-        ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount);
-        BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount);
-        BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount);
-        BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount);
+        ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount, storage);
+        BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount, storage);
+        BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount, storage);
+        BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount, storage);
         AlertGenerator alertGenerator = new AlertGenerator(patientCount);
+
 
         for (int patientId : patientIds) {
             scheduleTask(() -> ecgDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.SECONDS);
@@ -172,7 +181,22 @@ public class HealthDataSimulator {
             scheduleTask(() -> bloodLevelsDataGenerator.generate(patientId, outputStrategy), 2, TimeUnit.MINUTES);
             scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
         }
+
+        populateDataStorage();
     }
+
+    private static void populateDataStorage() {
+        if (outputStrategy instanceof FileOutputStrategy) {
+            try {
+                reader.readData(storage);
+            } catch (IOException e) {
+                System.err.println("An error occurred in health data simulator while reading data from the file: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+
 
     /**
      * Schedules a single task with a fixed rate of execution.
