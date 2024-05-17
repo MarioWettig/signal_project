@@ -15,6 +15,7 @@ import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
 import com.data_management.DataStorage;
+import com.data_management.TextFileReader;
 
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,10 @@ public class HealthDataSimulator {
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
 
+
     private static DataStorage storage = new DataStorage();
+    private static TextFileReader reader = new TextFileReader("");
+    private static String pathBase = "src/assets/files/";
 
 
     public static void main(String[] args) throws IOException {
@@ -87,12 +91,13 @@ public class HealthDataSimulator {
                         if (outputArg.equals("console")) {
                             outputStrategy = new ConsoleOutputStrategy();
                         } else if (outputArg.startsWith("file:")) {
-                            String baseDirectory = outputArg.substring(5);
+                            String baseDirectory = pathBase + outputArg.substring(5);
                             Path outputPath = Paths.get(baseDirectory);
                             if (!Files.exists(outputPath)) {
                                 Files.createDirectories(outputPath);
                             }
                             outputStrategy = new FileOutputStrategy(baseDirectory);
+                            reader.setFilePath(baseDirectory);
                         } else if (outputArg.startsWith("websocket:")) {
                             try {
                                 int port = Integer.parseInt(outputArg.substring(10));
@@ -169,12 +174,26 @@ public class HealthDataSimulator {
         BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount, storage);
         AlertGenerator alertGenerator = new AlertGenerator(patientCount);
 
+
         for (int patientId : patientIds) {
             scheduleTask(() -> ecgDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.SECONDS);
             scheduleTask(() -> bloodSaturationDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.SECONDS);
             scheduleTask(() -> bloodPressureDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.MINUTES);
             scheduleTask(() -> bloodLevelsDataGenerator.generate(patientId, outputStrategy), 2, TimeUnit.MINUTES);
             scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
+        }
+
+        populateDataStorage();
+    }
+
+    private static void populateDataStorage() {
+        if (outputStrategy instanceof FileOutputStrategy) {
+            try {
+                reader.readData(storage);
+            } catch (IOException e) {
+                System.err.println("An error occurred in health data simulator while reading data from the file: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 

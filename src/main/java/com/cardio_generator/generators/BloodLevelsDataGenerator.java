@@ -2,6 +2,7 @@ package com.cardio_generator.generators;
 
 import java.util.Random;
 
+import com.cardio_generator.outputs.ConsoleOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.data_management.DataStorage;
 
@@ -39,9 +40,11 @@ public class BloodLevelsDataGenerator implements PatientDataGenerator {
 
             long time =  System.currentTimeMillis();
 
-            storage.addPatientData(patientId, cholesterol, "Cholesterol", time);
-            storage.addPatientData(patientId, whiteCells, "WhiteBloodCells", time);
-            storage.addPatientData(patientId, redCells, "RedBloodCells", time);
+            if( outputStrategy instanceof ConsoleOutputStrategy) {
+                storage.addPatientData(patientId, cholesterol, "Cholesterol", time);
+                storage.addPatientData(patientId, whiteCells, "WhiteBloodCells", time);
+                storage.addPatientData(patientId, redCells, "RedBloodCells", time);
+            }
 
 
             // Output the generated values

@@ -2,6 +2,7 @@ package com.cardio_generator.generators;
 
 import java.util.Random;
 
+import com.cardio_generator.outputs.ConsoleOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.data_management.DataStorage;
 
@@ -41,9 +42,10 @@ public class BloodPressureDataGenerator implements PatientDataGenerator {
 
             long time = System.currentTimeMillis();
 
-            storage.addPatientData(patientId, newSystolicValue, "SystolicPressure", time);
-            storage.addPatientData(patientId, newDiastolicValue, "DiastolicPressure", time);
-
+            if( outputStrategy instanceof ConsoleOutputStrategy) {
+                storage.addPatientData(patientId, newSystolicValue, "SystolicPressure", time);
+                storage.addPatientData(patientId, newDiastolicValue, "DiastolicPressure", time);
+            }
 
             outputStrategy.output(patientId, time, "SystolicPressure",
                     Double.toString(newSystolicValue));

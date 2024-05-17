@@ -2,6 +2,7 @@ package com.cardio_generator.generators;
 
 import java.util.Random;
 
+import com.cardio_generator.outputs.ConsoleOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.data_management.DataStorage;
 
@@ -29,7 +30,9 @@ public class ECGDataGenerator implements PatientDataGenerator {
             double ecgValue = simulateEcgWaveform(patientId, lastEcgValues[patientId]);
             long time = System.currentTimeMillis();
 
-            storage.addPatientData(patientId, ecgValue, "ECG", time);
+            if( outputStrategy instanceof ConsoleOutputStrategy) {
+                storage.addPatientData(patientId, ecgValue, "ECG", time);
+            }
 
             outputStrategy.output(patientId, time, "ECG", Double.toString(ecgValue));
             lastEcgValues[patientId] = ecgValue;

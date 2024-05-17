@@ -1,5 +1,6 @@
 package com.cardio_generator.generators;
 
+import com.cardio_generator.outputs.ConsoleOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.data_management.DataStorage;
 
@@ -53,7 +54,9 @@ public class BloodSaturationDataGenerator implements PatientDataGenerator {
 
             long time = System.currentTimeMillis();
 
-            storage.addPatientData(patientId, newSaturationValue, "Saturation", time);
+            if( outputStrategy instanceof ConsoleOutputStrategy) {
+                storage.addPatientData(patientId, newSaturationValue, "Saturation", time);
+            }
 
             // Output the blood saturation data
             outputStrategy.output(patientId, time, "Saturation",
