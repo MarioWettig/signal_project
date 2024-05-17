@@ -48,7 +48,7 @@ public class HealthDataSimulator {
 
     private static DataStorage storage = new DataStorage();
     private static TextFileReader reader = new TextFileReader("");
-    private static String pathBase = "src/assets/files/";
+    private static String pathBase = "src/assets/DataFiles/";
 
 
     public static void main(String[] args) throws IOException {
