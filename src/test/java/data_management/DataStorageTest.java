@@ -22,11 +22,9 @@ class DataStorageTest {
 
     @Test
     void testAddAndGetRecords() {
-        // Add some test data
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
         storage.addPatientData(1, 200.0, "WhiteBloodCells", 1714376789051L);
 
-        // Retrieve records within the specified time range
         List<PatientRecord> records = storage.getRecords(1, 1714376789050L, 1714376789051L);
 
         // Validate the size of the retrieved records
