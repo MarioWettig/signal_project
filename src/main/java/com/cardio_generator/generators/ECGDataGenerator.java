@@ -3,18 +3,23 @@ package com.cardio_generator.generators;
 import java.util.Random;
 
 import com.cardio_generator.outputs.OutputStrategy;
+import com.data_management.DataStorage;
 
 public class ECGDataGenerator implements PatientDataGenerator {
     private static final Random random = new Random();
     private double[] lastEcgValues;
     private static final double PI = Math.PI;
 
-    public ECGDataGenerator(int patientCount) {
+    private DataStorage storage;
+
+    public ECGDataGenerator(int patientCount, DataStorage storage) {
         lastEcgValues = new double[patientCount + 1];
         // Initialize the last ECG value for each patient
         for (int i = 1; i <= patientCount; i++) {
             lastEcgValues[i] = 0; // Initial ECG value can be set to 0
         }
+
+        this.storage = storage;
     }
 
     @Override
@@ -22,7 +27,11 @@ public class ECGDataGenerator implements PatientDataGenerator {
         // TODO Check how realistic this data is and make it more realistic if necessary
         try {
             double ecgValue = simulateEcgWaveform(patientId, lastEcgValues[patientId]);
-            outputStrategy.output(patientId, System.currentTimeMillis(), "ECG", Double.toString(ecgValue));
+            long time = System.currentTimeMillis();
+
+            storage.addPatientData(patientId, ecgValue, "ECG", time);
+
+            outputStrategy.output(patientId, time, "ECG", Double.toString(ecgValue));
             lastEcgValues[patientId] = ecgValue;
         } catch (Exception e) {
             System.err.println("An error occurred while generating ECG data for patient " + patientId);

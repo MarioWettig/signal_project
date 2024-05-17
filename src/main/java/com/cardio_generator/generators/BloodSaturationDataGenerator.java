@@ -1,6 +1,7 @@
 package com.cardio_generator.generators;
 
 import com.cardio_generator.outputs.OutputStrategy;
+import com.data_management.DataStorage;
 
 import java.util.Random;
 
@@ -15,18 +16,22 @@ public class BloodSaturationDataGenerator implements PatientDataGenerator {
     private static final Random random = new Random();
     private int[] lastSaturationValues; // Array to store the last saturation values for each patient
 
+    private DataStorage storage;
+
     /**
      * Constructs a BloodSaturationDataGenerator object with the specified number of patients.
      *
      * @param patientCount the number of patients for which to generate blood saturation data
      */
-    public BloodSaturationDataGenerator(int patientCount) {
+    public BloodSaturationDataGenerator(int patientCount, DataStorage storage) {
         lastSaturationValues = new int[patientCount + 1]; // Initialize the array with the specified number of patients
 
         // Initialize with baseline saturation values for each patient
         for (int i = 1; i <= patientCount; i++) {
             lastSaturationValues[i] = 95 + random.nextInt(6); // Initializes with a value between 95 and 100
         }
+
+        this.storage = storage;
     }
 
     /**
@@ -46,8 +51,12 @@ public class BloodSaturationDataGenerator implements PatientDataGenerator {
             newSaturationValue = Math.min(Math.max(newSaturationValue, 90), 100);
             lastSaturationValues[patientId] = newSaturationValue;
 
+            long time = System.currentTimeMillis();
+
+            storage.addPatientData(patientId, newSaturationValue, "Saturation", time);
+
             // Output the blood saturation data
-            outputStrategy.output(patientId, System.currentTimeMillis(), "Saturation",
+            outputStrategy.output(patientId, time, "Saturation",
                     Double.toString(newSaturationValue) + "%");
         } catch (Exception e) {
             // Handle any exceptions that may occur during data generation

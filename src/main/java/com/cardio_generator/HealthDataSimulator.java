@@ -14,6 +14,7 @@ import com.cardio_generator.outputs.FileOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
+import com.data_management.DataStorage;
 
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +44,8 @@ public class HealthDataSimulator {
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
     private static final Random random = new Random();
 
+    private static DataStorage storage = new DataStorage();
+
 
     public static void main(String[] args) throws IOException {
         parseArguments(args);
@@ -54,6 +57,7 @@ public class HealthDataSimulator {
 
         scheduleTasksForPatients(patientIds);
     }
+
 
     /**
      * Parses the command line arguments to set simulation parameters.
@@ -159,10 +163,10 @@ public class HealthDataSimulator {
      * @param patientIds List of patient IDs for whom to schedule tasks.
      */
     private static void scheduleTasksForPatients(List<Integer> patientIds) {
-        ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount);
-        BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount);
-        BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount);
-        BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount);
+        ECGDataGenerator ecgDataGenerator = new ECGDataGenerator(patientCount, storage);
+        BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount, storage);
+        BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount, storage);
+        BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount, storage);
         AlertGenerator alertGenerator = new AlertGenerator(patientCount);
 
         for (int patientId : patientIds) {
