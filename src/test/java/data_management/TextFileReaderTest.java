@@ -43,7 +43,6 @@ public class TextFileReaderTest {
         }
 
         textFileReader.setFilePath(tempFile.getAbsolutePath());
-
         textFileReader.readData(dataStorage);
 
         List<PatientRecord> recordsPatient1 = dataStorage.getRecords(1, 1714376789050L, 1714376789051L);

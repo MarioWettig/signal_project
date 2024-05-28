@@ -4,11 +4,16 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class TextFileReader implements DataReader {
+public class TextFileReader {
 
     private String filePath;
+    private DataStorage dataStorage;
 
     public TextFileReader(){}
+
+    public TextFileReader(DataStorage dataStorage){
+        this.dataStorage = dataStorage;
+    }
 
     public TextFileReader(String filePath) {
         this.filePath = filePath;
@@ -18,7 +23,6 @@ public class TextFileReader implements DataReader {
         this.filePath = filePath;
     }
 
-    @Override
     public void readData(DataStorage dataStorage) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;

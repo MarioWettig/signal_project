@@ -1,7 +1,9 @@
 package com.data_management;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Represents a patient and manages their medical records.
@@ -11,7 +13,8 @@ import java.util.List;
  */
 public class Patient {
     private int patientId;
-    private List<PatientRecord> patientRecords;
+    private LinkedList<PatientRecord> patientRecords;
+    private final int maxRecords = 1000;
 
     /**
      * Constructs a new Patient with a specified ID.
@@ -21,7 +24,7 @@ public class Patient {
      */
     public Patient(int patientId) {
         this.patientId = patientId;
-        this.patientRecords = new ArrayList<>();
+        this.patientRecords = new LinkedList<>();
     }
 
     /**
@@ -36,8 +39,10 @@ public class Patient {
      *                         milliseconds since UNIX epoch
      */
     public void addRecord(double measurementValue, String recordType, long timestamp) {
-        PatientRecord record = new PatientRecord(this.patientId, measurementValue, recordType, timestamp);
-        this.patientRecords.add(record);
+        if (patientRecords.size() > maxRecords) {
+            patientRecords.removeFirst();
+        }
+        patientRecords.add(new PatientRecord(patientId, measurementValue, recordType, timestamp));
     }
 
     /**
@@ -52,15 +57,9 @@ public class Patient {
      *         range
      */
     public List<PatientRecord> getRecords(long startTime, long endTime) {
-        // TODO Implement and test this method
-        List<PatientRecord> records = new ArrayList<>();
-
-        for (PatientRecord record : this.patientRecords) {
-            if (record.getTimestamp() >= startTime && record.getTimestamp() <= endTime) {
-                records.add(record);
-            }
-        }
-        return records;
+        return patientRecords.stream()
+                .filter(record -> record.getTimestamp() >= startTime && record.getTimestamp() <= endTime)
+                .collect(Collectors.toList());
     }
 
     public int getPatientId() {

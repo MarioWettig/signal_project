@@ -1,5 +1,6 @@
 package com.cardio_generator;
 
+import java.net.URISyntaxException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +17,7 @@ import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
 import com.data_management.DataStorage;
 import com.data_management.TextFileReader;
+import com.data_management.WebSocketDataClient;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,10 +48,12 @@ public class HealthDataSimulator {
     private static final Random random = new Random();
 
 
-    private static DataStorage storage = new DataStorage();
-    private static TextFileReader reader = new TextFileReader("");
+    public static DataStorage storage = new DataStorage();
+    private static TextFileReader reader = new TextFileReader(storage);
     private static String pathBase = "src/assets/DataFiles/";
 
+    private static int port;
+    private static WebSocketDataClient client;
 
     public static void main(String[] args) throws IOException {
         parseArguments(args);
@@ -99,12 +103,15 @@ public class HealthDataSimulator {
                             reader.setFilePath(baseDirectory);
                         } else if (outputArg.startsWith("websocket:")) {
                             try {
-                                int port = Integer.parseInt(outputArg.substring(10));
+                                port = Integer.parseInt(outputArg.substring(10));
                                 outputStrategy = new WebSocketOutputStrategy(port);
+                                client = new WebSocketDataClient("websocket:" + port, storage);
                                 System.out.println("WebSocket output will be on port: " + port);
                             } catch (NumberFormatException e) {
                                 System.err.println(
                                         "Invalid port for WebSocket output. Please specify a valid port number.");
+                            } catch (URISyntaxException e) {
+                                e.printStackTrace();
                             }
                         } else if (outputArg.startsWith("tcp:")) {
                             try {
