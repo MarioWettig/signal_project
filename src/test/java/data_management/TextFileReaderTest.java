@@ -33,7 +33,6 @@ public class TextFileReaderTest {
 
     @Test
     void testReadData() throws IOException {
-        // Create a temporary file
         File tempFile = tempDir.resolve("patient_data.txt").toFile();
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
             writer.write("Patient ID: 1, Timestamp: 1714376789050, Label: HeartRate, Data: 100.0\n");
