@@ -38,6 +38,114 @@ public class AlertGenerator {
      * @param patient the patient data to evaluate for alert conditions
      */
     public void evaluateData(Patient patient) {
+        PatientRecord current= patient.getPatientRecords().get(patient.getPatientRecords().size()-1);
+            switch (current.getRecordType()) {
+                case ("SystolicPressure"):
+                    evaluateSystolicPressure(patient, current);
+                    break;
+                case ("DiastolicPressure"):
+                    evaluateDiastolicPressure(patient, current);
+                    break;
+                case ("Saturation"):
+                    evaluateSaturation(patient, current);
+                    break;
+                case ("ECG"):
+                    // not implemented yet
+            }
+    }
+
+    public void evaluateSystolicPressure(Patient patient, PatientRecord lastUploaded){
+        // check trendAlert
+        trendAlert(patient,lastUploaded.getRecordType());
+        // checking critical value
+        double currentValue= lastUploaded.getMeasurementValue();;
+        if ((currentValue > 180 || currentValue < 90)) triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Critical Threshold Alert pressure", lastUploaded.getTimestamp()));
+
+        // Hypotensive Hypoxemia check
+        if (currentValue<90) {
+            List<PatientRecord> record = patient.getPatientRecords();
+            boolean found = false;
+            for (int i = record.size() - 1; i >= 0; i--) {
+                if (record.get(i).getRecordType().equals("Saturation")) {
+                    if (record.get(i).getMeasurementValue() < 92) found = true;
+                    break;
+                }
+            }
+            if (found)
+                triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Hypotensive Hypoxemia Alert", lastUploaded.getTimestamp()));
+        }
+    }
+    public void evaluateDiastolicPressure(Patient patient, PatientRecord lastUploaded) {
+        // check trendAlert
+        trendAlert(patient, lastUploaded.getRecordType());
+        // checking critical value
+        double currentValue = lastUploaded.getMeasurementValue();
+        ;
+        if ((currentValue > 120 || currentValue < 60))
+            triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Critical Threshold Alert pressure", lastUploaded.getTimestamp()));
+    }
+    public void evaluateSaturation(Patient patient, PatientRecord lastUploaded) {
+        double currentValue=lastUploaded.getMeasurementValue();
+
+        if (currentValue<92) triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Low Saturation Alert", lastUploaded.getTimestamp()));
+
+        // Hypotensive Hypoxemia check
+        if (currentValue<92) {
+            List<PatientRecord> record = patient.getPatientRecords();
+            boolean found = false;
+            for (int i = record.size() - 1; i >= 0; i--) {
+                if (record.get(i).getRecordType().equals("SystolicPressure")) {
+                    if (record.get(i).getMeasurementValue() < 90) found = true;
+                    break;
+                }
+            }
+            if (found)
+                triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Hypotensive Hypoxemia Alert", lastUploaded.getTimestamp()));
+        }
+
+        List<PatientRecord> record= patient.getRecords(lastUploaded.getTimestamp()-6000,lastUploaded.getTimestamp());
+        double max=0;
+        boolean condition=false;
+        for (int i = 0; i < record.size()-1; i++) {
+            if (record.get(i).getRecordType().equals("Saturation")){
+                if (record.get(i).getMeasurementValue()>max) {
+                    condition=true;
+                    max=record.get(i).getMeasurementValue();
+                }
+            }
+        } if (condition && lastUploaded.getMeasurementValue()-max>5) triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Saturation drop Alert", lastUploaded.getTimestamp()));
+    }
+
+    public void trendAlert(Patient patient, String typeValue){
+        int counter=1; //value counted
+        List<PatientRecord> record= patient.getPatientRecords();
+        if (record.size()<3) return;
+        double [] values= new double[]{0,0,record.get(record.size()-1).getMeasurementValue()};
+        for (int i = record.size()-2;i>=0 ; i--) {
+            if (record.get(i).getRecordType().equals(typeValue)) {
+                values[counter] = record.get(i).getMeasurementValue();
+                counter--;
+            }
+            if (counter==-1) break;
+        }
+        if (counter!=-1) return;
+        if (values[1]-values[0]>10 && values[2]-values[1]>10) triggerAlert(new Alert(String.valueOf(patient.getPatientId()), "Trend Alert",record.get(record.size()-1).getTimestamp() ));
+    }
+
+    /**
+     * Triggers an alert for the monitoring system. This method can be extended to
+     * notify medical staff, log the alert, or perform other actions. The method
+     * currently assumes that the alert information is fully formed when passed as
+     * an argument.
+     *
+     * @param alert the alert object containing details about the alert condition
+     */
+    private void triggerAlert(Alert alert) {
+        // Implementation might involve logging the alert or notifying staff
+        System.out.println("alert for patient "+alert.getPatientId()+": "+alert.getCondition()+" at time: "+alert.getTimestamp()+" ---------------------------ALERT");
+    }
+
+    public void oldEvaluateData(Patient patient) {
         long startingEvaluation = 6000;  //ten minutes
         List<PatientRecord> list = patient.getRecords(System.currentTimeMillis() - startingEvaluation, System.currentTimeMillis());  // do not know which one to select
         int patientID = patient.getPatientId();
@@ -101,19 +209,6 @@ public class AlertGenerator {
         }
 
 
-    }
-
-    /**
-     * Triggers an alert for the monitoring system. This method can be extended to
-     * notify medical staff, log the alert, or perform other actions. The method
-     * currently assumes that the alert information is fully formed when passed as
-     * an argument.
-     *
-     * @param alert the alert object containing details about the alert condition
-     */
-    private void triggerAlert(Alert alert) {
-        // Implementation might involve logging the alert or notifying staff
-        System.out.println("alert for patient "+alert.getPatientId()+": "+alert.getCondition()+" at time: "+alert.getTimestamp()+" ---------------------------ALERT");
     }
 
 }
