@@ -43,6 +43,8 @@ import java.util.ArrayList;
  */
 public class HealthDataSimulator {
 
+    private static HealthDataSimulator instance;
+
     private static int patientCount = 50; // Default number of patients
     private static ScheduledExecutorService scheduler;
     private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
@@ -54,6 +56,25 @@ public class HealthDataSimulator {
     private static int port;
     private static DataReader readingStrategy;
 
+    /**
+     * singlton constructor
+     */
+    private HealthDataSimulator() {}
+
+    /**
+     * singlton getInstacne method
+     *
+     */
+    public static synchronized HealthDataSimulator getInstance() {
+        if (instance == null) {
+            instance = new HealthDataSimulator();
+        }
+        return instance;
+    }
+
+    public static synchronized void resetInstance() {
+        instance = null;
+    }
 
 
     public static void main(String[] args) throws IOException {
