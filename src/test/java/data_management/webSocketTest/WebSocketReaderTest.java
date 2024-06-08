@@ -50,9 +50,6 @@ public class WebSocketReaderTest {
         // Wait for the latch to ensure the message was processed
         latch.await(1, TimeUnit.SECONDS);
 
-        // Wait for the latch to ensure the message was processed
-
-       //System.out.println("Size of patientMap: " + dataStorage.getPatientMap().size());
 
         Patient patient = dataStorage.getPatientMap().get(1);
         System.out.println(patient.getPatientRecords().get(0).getTimestamp());
