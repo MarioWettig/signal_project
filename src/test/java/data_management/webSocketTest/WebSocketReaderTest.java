@@ -18,6 +18,8 @@ public class WebSocketReaderTest {
     private TestWebSocketServer server;
     private CountDownLatch latch;
 
+    // have to make a test server to actually test whether the websocket reader actually works
+
     @BeforeEach
     public void startServer() throws Exception {
         latch = new CountDownLatch(1);
