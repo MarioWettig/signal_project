@@ -1,10 +1,8 @@
 package com.data_management.readers;
 import com.data_management.DataStorage;
-import com.data_management.WebSocketClientData;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
