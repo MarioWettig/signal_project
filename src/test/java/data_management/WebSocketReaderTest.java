@@ -1,6 +1,7 @@
 package data_management;
 
 import com.data_management.DataStorage;
+import com.data_management.Patient;
 import com.data_management.PatientRecord;
 import com.data_management.readers.WebSocketReader;
 import org.java_websocket.client.WebSocketClient;
@@ -34,7 +35,7 @@ public class WebSocketReaderTest {
     }
 
     @Test
-    public void testWebSocketReadingStrategy() throws Exception {
+    public void testWebSocketReader() throws Exception {
         DataStorage dataStorage = new DataStorage();
         WebSocketReader strategy = new WebSocketReader("ws://localhost:8080");
 
@@ -45,14 +46,16 @@ public class WebSocketReaderTest {
         Thread.sleep(1000);
 
         // Send test message
-        String testMessage = "1,1622556000000,HeartRate,72.5";
+        String testMessage = "1,72.5,HeartRate,1622556000000";
         server.sendTestMessage(testMessage);
 
         // Wait for the latch to ensure the message was processed
         latch.await(5, TimeUnit.SECONDS);
+        System.out.println(dataStorage.getPatientMap().size());
 
-        // Verify that data is added to DataStorage
-        PatientRecord record = dataStorage.getPatientMap().get(1).getPatientRecords().get(0);
+        Patient patient = dataStorage.getPatientMap().get(1);
+        assertEquals(1, patient.getPatientId());
+        PatientRecord record = patient.getPatientRecords().get(0);
         assertEquals(1, record.getPatientId());
         assertEquals(1622556000000L, record.getTimestamp());
         assertEquals("HeartRate", record.getRecordType());

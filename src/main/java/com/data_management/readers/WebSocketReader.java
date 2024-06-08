@@ -29,6 +29,7 @@ public class WebSocketReader implements DataReader {
 
                 @Override
                 public void onMessage(String message) {
+                    System.out.println("Client: Received message: " + message);
                     String[] parts = message.split(",");
                     if (parts.length == 4) {
                         int patientId = Integer.parseInt(parts[0]);
