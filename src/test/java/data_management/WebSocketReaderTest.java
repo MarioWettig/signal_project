@@ -39,6 +39,7 @@ public class WebSocketReaderTest {
         DataStorage dataStorage = new DataStorage();
         WebSocketReader strategy = new WebSocketReader("ws://localhost:8080");
 
+
         // Start a thread to read data from WebSocket
         new Thread(() -> strategy.readData(dataStorage)).start();
 
@@ -51,9 +52,10 @@ public class WebSocketReaderTest {
 
         // Wait for the latch to ensure the message was processed
         latch.await(5, TimeUnit.SECONDS);
-        System.out.println(dataStorage.getPatientMap().size());
+        System.out.println("Size of patientMap: " + dataStorage.getPatientMap().size());
 
         Patient patient = dataStorage.getPatientMap().get(1);
+        System.out.println(patient.getPatientRecords().get(0).getTimestamp());
         assertEquals(1, patient.getPatientId());
         PatientRecord record = patient.getPatientRecords().get(0);
         assertEquals(1, record.getPatientId());
