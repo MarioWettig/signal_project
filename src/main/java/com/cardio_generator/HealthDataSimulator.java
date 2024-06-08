@@ -49,7 +49,7 @@ public class HealthDataSimulator {
     private static final Random random = new Random();
 
 
-    public static DataStorage storage = new DataStorage();
+    public static DataStorage storage = DataStorage.getInstance();
     private static String pathBase = "src/assets/DataFiles/";
     private static int port;
     private static DataReader readingStrategy;

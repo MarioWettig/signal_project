@@ -5,7 +5,7 @@ import com.data_management.DataStorage;
 
 public class ConsoleOutputStrategy implements OutputStrategy {
 
-    DataStorage dataStorage= new DataStorage();
+    DataStorage dataStorage= DataStorage.getInstance();
     AlertGenerator alertGenerator= new AlertGenerator(dataStorage);
     @Override
     public void output(int patientId, long timestamp, String label, String data) {
