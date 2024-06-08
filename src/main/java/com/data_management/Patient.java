@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class Patient {
     private int patientId;
     private LinkedList<PatientRecord> patientRecords;
-    private final int maxRecords = 1000;
+    private final int maxRecords = 999;
 
     /**
      * Constructs a new Patient with a specified ID.

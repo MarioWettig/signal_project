@@ -20,7 +20,6 @@ class DataStorageTest {
         storage = DataStorage.getInstance();
     }
 
-
     @Test
     void testAddAndGetRecords() {
         storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
@@ -75,6 +74,14 @@ class DataStorageTest {
         storage.addPatientData(3, 200.0, "WhiteBloodCells", 1714376789052L);
         List<PatientRecord> records = storage.getRecords(3, 1714376789051L, 1714376789051L);
 
+        assertEquals(0, records.size());
+    }
+
+    @Test
+    void testAddRecordOutsideRange() {
+        storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
+
+        List<PatientRecord> records = storage.getRecords(1, 1714376789051L, 1714376789052L);
         assertEquals(0, records.size());
     }
 
