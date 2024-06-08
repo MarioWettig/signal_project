@@ -2,7 +2,7 @@ package data_management;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.data_management.TextFileReader;
+import com.data_management.readers.TextFileReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -25,11 +25,6 @@ public class TextFileReaderTest {
     private DataStorage dataStorage;
     private TextFileReader textFileReader;
 
-    @BeforeEach
-    void setUp() {
-        dataStorage = new DataStorage();
-        textFileReader = new TextFileReader();
-    }
 
     @Test
     void testReadData() throws IOException {
@@ -42,7 +37,8 @@ public class TextFileReaderTest {
             throw new RuntimeException(e);
         }
 
-        textFileReader.setFilePath(tempFile.getAbsolutePath());
+        dataStorage = new DataStorage();
+        textFileReader = new TextFileReader(tempFile.getAbsolutePath());
         textFileReader.readData(dataStorage);
 
         List<PatientRecord> recordsPatient1 = dataStorage.getRecords(1, 1714376789050L, 1714376789051L);

@@ -12,20 +12,18 @@ import java.net.URISyntaxException;
  * to receive and process real-time data streams. It implements the DataReader
  * interface to read and process incoming data messages.
  */
-public class WebSocketDataClient extends WebSocketClient implements DataReader {
+public class WebSocketClientData extends WebSocketClient {
 
-    private DataStorage dataStorage;
 
     /**
      * Constructs a new WebSocketDataClient.
      *
      * @param serverUri    The URI of the WebSocket server to connect to.
-     * @param dataStorage  The DataStorage instance used to store parsed data.
      * @throws URISyntaxException If the provided serverUri is not a valid URI.
      */
-    public WebSocketDataClient(String serverUri, DataStorage dataStorage) throws URISyntaxException {
+
+    public WebSocketClientData(String serverUri) throws URISyntaxException {
         super(new URI(serverUri));
-        this.dataStorage = dataStorage;
     }
 
     /**
@@ -45,11 +43,6 @@ public class WebSocketDataClient extends WebSocketClient implements DataReader {
      */
     @Override
     public void onMessage(String message) {
-        try {
-            readData(message);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
@@ -81,23 +74,5 @@ public class WebSocketDataClient extends WebSocketClient implements DataReader {
      * @param message The data message received from the WebSocket server.
      * @throws IOException If an I/O error occurs.
      */
-    @Override
-    public void readData(String message) throws IOException {
-        String[] parts = message.split(",");
-        if (parts.length == 4) {
-            try {
-                int patientId = Integer.parseInt(parts[0]);
-                double measurementValue = Double.parseDouble(parts[1]);
-                String recordType = parts[2];
-                long timestamp = Long.parseLong(parts[3]);
-
-                dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
-            } catch (NumberFormatException e) {
-                System.err.println("Failed to parse reading: " + message);
-            }
-        } else {
-            System.err.println("Invalid measurement format: " + message);
-        }
-    }
 }
 

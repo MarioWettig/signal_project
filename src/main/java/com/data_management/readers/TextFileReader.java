@@ -1,23 +1,18 @@
-package com.data_management;
+package com.data_management.readers;
+
+import com.data_management.DataStorage;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class TextFileReader {
+public class TextFileReader implements DataReader {
 
     private String filePath;
-    private DataStorage dataStorage;
 
     public TextFileReader(){}
 
-    public TextFileReader(DataStorage dataStorage){
-        this.dataStorage = dataStorage;
-    }
-
-    public TextFileReader(String filePath) {
-        this.filePath = filePath;
-    }
+    public TextFileReader(String filePath){this.filePath = filePath;}
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
@@ -42,4 +37,9 @@ public class TextFileReader {
             throw e;
         }
     }
+
+    public void readString(String message) throws IOException {
+
+    }
+
 }

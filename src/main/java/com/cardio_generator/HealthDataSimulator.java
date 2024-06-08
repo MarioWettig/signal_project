@@ -16,8 +16,9 @@ import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.TcpOutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
 import com.data_management.DataStorage;
-import com.data_management.TextFileReader;
-import com.data_management.WebSocketDataClient;
+import com.data_management.readers.DataReader;
+import com.data_management.readers.TextFileReader;
+import com.data_management.readers.WebSocketReader;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,11 +50,11 @@ public class HealthDataSimulator {
 
 
     public static DataStorage storage = new DataStorage();
-    private static TextFileReader reader = new TextFileReader(storage);
     private static String pathBase = "src/assets/DataFiles/";
-
     private static int port;
-    private static WebSocketDataClient client;
+    private static DataReader readingStrategy;
+
+
 
     public static void main(String[] args) throws IOException {
         parseArguments(args);
@@ -100,18 +101,18 @@ public class HealthDataSimulator {
                                 Files.createDirectories(outputPath);
                             }
                             outputStrategy = new FileOutputStrategy(baseDirectory);
-                            reader.setFilePath(baseDirectory);
+                            readingStrategy = new TextFileReader(baseDirectory);
                         } else if (outputArg.startsWith("websocket:")) {
                             try {
                                 port = Integer.parseInt(outputArg.substring(10));
                                 outputStrategy = new WebSocketOutputStrategy(port);
-                                client = new WebSocketDataClient("websocket:" + port, storage);
                                 System.out.println("WebSocket output will be on port: " + port);
+                                readingStrategy = new WebSocketReader("ws://localhost:" + port);
                             } catch (NumberFormatException e) {
                                 System.err.println(
                                         "Invalid port for WebSocket output. Please specify a valid port number.");
-                            } catch (URISyntaxException e) {
-                                e.printStackTrace();
+                            //} catch (URISyntaxException e) {
+                               // e.printStackTrace();
                             }
                         } else if (outputArg.startsWith("tcp:")) {
                             try {
@@ -188,21 +189,7 @@ public class HealthDataSimulator {
             scheduleTask(() -> bloodLevelsDataGenerator.generate(patientId, outputStrategy), 2, TimeUnit.MINUTES);
             scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
         }
-
-        populateDataStorage();
     }
-
-    private static void populateDataStorage() {
-        if (outputStrategy instanceof FileOutputStrategy) {
-            try {
-                reader.readData(storage);
-            } catch (IOException e) {
-                System.err.println("An error occurred in health data simulator while reading data from the file: " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
-
 
 
     /**
