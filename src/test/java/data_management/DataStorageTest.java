@@ -16,6 +16,7 @@ class DataStorageTest {
 
     @BeforeEach
     void setUp() {
+        DataStorage.resetInstance();
         storage = DataStorage.getInstance();
     }
 
@@ -42,11 +43,11 @@ class DataStorageTest {
 
     @Test
     void testAddAndGetRecordsForMultiplePatients() {
-        storage.addPatientData(5, 100.0, "WhiteBloodCells", 1714376789050L);
-        storage.addPatientData(6, 200.0, "RedBloodCells", 1714376789051L);
+        storage.addPatientData(1, 100.0, "WhiteBloodCells", 1714376789050L);
+        storage.addPatientData(2, 200.0, "RedBloodCells", 1714376789051L);
 
-        List<PatientRecord> recordsPatient1 = storage.getRecords(5, 1714376789050L, 1714376789051L);
-        List<PatientRecord> recordsPatient2 = storage.getRecords(6, 1714376789050L, 1714376789051L);
+        List<PatientRecord> recordsPatient1 = storage.getRecords(1, 1714376789050L, 1714376789051L);
+        List<PatientRecord> recordsPatient2 = storage.getRecords(2, 1714376789050L, 1714376789051L);
 
         assertEquals(1, recordsPatient1.size());
         assertEquals(1, recordsPatient2.size());
