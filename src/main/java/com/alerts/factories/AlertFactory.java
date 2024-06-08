@@ -1,4 +1,6 @@
-package com.alerts;
+package com.alerts.factories;
+
+import com.alerts.alerts.Alert;
 
 public class AlertFactory {
 

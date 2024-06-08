@@ -1,6 +1,8 @@
-package com.alerts;
+package com.alerts.alerts;
 
-public class ECGAlert extends Alert{
+import com.alerts.alerts.Alert;
+
+public class ECGAlert extends Alert {
     public ECGAlert(String patientId, String condition, long timestamp) {
         super(patientId, condition, timestamp);
     }
