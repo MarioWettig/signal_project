@@ -23,7 +23,7 @@ public class WebSocketReaderTest {
         latch = new CountDownLatch(1);
         server = new TestWebSocketServer(new InetSocketAddress("localhost", 8080), latch);
         server.start();
-        Thread.sleep(1000); // Wait for the server to start
+        Thread.sleep(1000);
     }
 
     @AfterEach
@@ -36,20 +36,15 @@ public class WebSocketReaderTest {
         DataStorage dataStorage = new DataStorage();
         WebSocketReader reader = new WebSocketReader("ws://localhost:8080");
 
-
         Thread readerThread = new Thread(() -> reader.readData(dataStorage));
         readerThread.start();
 
-        // Wait a bit to ensure the client is connected
         Thread.sleep(1000);
 
-        // Send test message
         String testMessage = "1,72.5,HeartRate,1622556000000";
         server.sendTestMessage(testMessage);
 
-        // Wait for the latch to ensure the message was processed
         latch.await(1, TimeUnit.SECONDS);
-
 
         Patient patient = dataStorage.getPatientMap().get(1);
         System.out.println(patient.getPatientRecords().get(0).getTimestamp());
