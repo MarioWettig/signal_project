@@ -12,7 +12,6 @@ import java.util.concurrent.CountDownLatch;
 
 public class WebSocketReader implements DataReader {
     private String serverUri;
-    private final Object lock = new Object();
 
     public WebSocketReader(String serverUri) {
         this.serverUri = serverUri;
@@ -31,19 +30,7 @@ public class WebSocketReader implements DataReader {
 
                 @Override
                 public void onMessage(String message) {
-                    System.out.println("Client: Received message: " + message);
-                    String[] parts = message.split(",");
-                    System.out.println(Arrays.toString(parts));
-                    if (parts.length == 4) {
-                        int patientId = Integer.parseInt(parts[0]);
-                        double measurementValue = Double.parseDouble(parts[1]);
-                        String recordType = parts[2];
-                        long timestamp = Long.parseLong(parts[3]);
-                        synchronized (lock) { // Synchronize the addPatientData call
-                            dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
-                        }
-                        System.out.println("Client: Data added to DataStorage");
-                    }
+                    processMessage(message, dataStorage);
                 }
 
                 @Override
@@ -61,6 +48,20 @@ public class WebSocketReader implements DataReader {
             latch.await(); // Wait until the connection is closed
         } catch (URISyntaxException | InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void processMessage(String message, DataStorage dataStorage) {
+        System.out.println("Client: Received message: " + message);
+        String[] parts = message.split(",");
+        System.out.println(Arrays.toString(parts));
+        if (parts.length == 4) {
+            int patientId = Integer.parseInt(parts[0].trim());
+            double measurementValue = Double.parseDouble(parts[1].trim());
+            String recordType = parts[2].trim();
+            long timestamp = Long.parseLong(parts[3].trim());
+            dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
+            System.out.println("Client: Data added to DataStorage");
         }
     }
 }

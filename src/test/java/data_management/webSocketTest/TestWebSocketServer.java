@@ -1,4 +1,4 @@
-package data_management;
+package data_management.webSocketTest;
 
 import org.java_websocket.server.WebSocketServer;
 import org.java_websocket.WebSocket;
@@ -9,7 +9,8 @@ import java.util.concurrent.CountDownLatch;
 
 public class TestWebSocketServer extends WebSocketServer {
 
-    private CountDownLatch latch;
+    private WebSocket clientConnection;
+    private final CountDownLatch latch;
 
     public TestWebSocketServer(InetSocketAddress address, CountDownLatch latch) {
         super(address);
@@ -19,6 +20,7 @@ public class TestWebSocketServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         System.out.println("Server: new connection opened");
+        this.clientConnection = conn;
     }
 
     @Override
@@ -29,6 +31,7 @@ public class TestWebSocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         System.out.println("Server: received message: " + message);
+        latch.countDown();
     }
 
     @Override
@@ -42,8 +45,9 @@ public class TestWebSocketServer extends WebSocketServer {
     }
 
     public void sendTestMessage(String message) {
-        broadcast(message);
-        latch.countDown();
+        if (clientConnection != null) {
+            clientConnection.send(message);
+        }
     }
 
 }

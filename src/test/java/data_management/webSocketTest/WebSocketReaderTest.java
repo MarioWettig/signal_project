@@ -1,17 +1,14 @@
-package data_management;
+package data_management.webSocketTest;
 
 import com.data_management.DataStorage;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 import com.data_management.readers.WebSocketReader;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.InetSocketAddress;
-import java.net.URI;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -37,11 +34,11 @@ public class WebSocketReaderTest {
     @Test
     public void testWebSocketReader() throws Exception {
         DataStorage dataStorage = new DataStorage();
-        WebSocketReader strategy = new WebSocketReader("ws://localhost:8080");
+        WebSocketReader reader = new WebSocketReader("ws://localhost:8080");
 
 
-        // Start a thread to read data from WebSocket
-        new Thread(() -> strategy.readData(dataStorage)).start();
+        Thread readerThread = new Thread(() -> reader.readData(dataStorage));
+        readerThread.start();
 
         // Wait a bit to ensure the client is connected
         Thread.sleep(1000);
@@ -51,8 +48,11 @@ public class WebSocketReaderTest {
         server.sendTestMessage(testMessage);
 
         // Wait for the latch to ensure the message was processed
-        latch.await(5, TimeUnit.SECONDS);
-        System.out.println("Size of patientMap: " + dataStorage.getPatientMap().size());
+        latch.await(1, TimeUnit.SECONDS);
+
+        // Wait for the latch to ensure the message was processed
+
+       //System.out.println("Size of patientMap: " + dataStorage.getPatientMap().size());
 
         Patient patient = dataStorage.getPatientMap().get(1);
         System.out.println(patient.getPatientRecords().get(0).getTimestamp());
