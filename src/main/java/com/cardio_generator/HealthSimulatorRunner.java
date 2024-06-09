@@ -22,6 +22,7 @@ public class HealthSimulatorRunner {
             OutputStrategy outputStrategy = new WebSocketOutputStrategy(8080);
             DataStorage dataStorage = DataStorage.getDataStorageInstance();
             DataReader reader = new WebSocketReader("ws://localhost:8080");
+
             HealthDataProcessor processor = new HealthDataProcessor(new ConsoleOutput(), null);
             dataStorage.addDataListener(processor);
 

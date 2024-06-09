@@ -4,14 +4,11 @@ import com.alerts.AlertManager;
 import com.alerts.alerts.Alert;
 import com.alerts.outputstrategy.AlertOutputStrategy;
 import com.alerts.strategies.*;
-import com.data_management.DataStorage;
 import com.data_management.Patient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
 
 public class HealthDataProcessor implements DataListener {
     private List<StrategyPattern> realTimeStrategies;
@@ -22,7 +19,7 @@ public class HealthDataProcessor implements DataListener {
         this.alertManager = new AlertManager(outputStrategy);
 
         if (realTimeStrategies == null) initializeRealTimeStrategies();
-        else this.realTimeStrategies = new ArrayList<>();
+        else this.realTimeStrategies = realTimeStrategies;
 
     }
 

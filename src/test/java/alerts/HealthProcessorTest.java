@@ -23,37 +23,65 @@ public class HealthProcessorTest {
 
     @Test
     void testRealTimeStrategiesGenerateAlerts() throws InterruptedException {
-        // Create a mock real-time strategy that generates an alert
         MockRealTimeStrategy realTimeStrategy = new MockRealTimeStrategy(true);
         healthDataProcessor = new HealthDataProcessor(outputStrategy, Arrays.asList(realTimeStrategy));
 
-        // Create a mock patient
         Patient mockPatient = new Patient(1);
         healthDataProcessor.onDataAdded(mockPatient);
 
-        // Wait for alerts
-        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
+        boolean alertsReceived = outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
+        assertTrue(alertsReceived, "Alerts were not received in the expected time");
 
-        // Verify the alert
         assertEquals(1, outputStrategy.getAlerts().size());
         assertTrue(outputStrategy.getAlerts().get(0).contains("Mock RealTime Condition"));
     }
 
     @Test
-    void testPeriodicStrategiesGenerateAlerts() throws InterruptedException {
-        // Create a mock periodic strategy that generates an alert
-        MockPeriodicStrategy periodicStrategy = new MockPeriodicStrategy(true);
+    void testNoAlertsWhenRealTimeStrategyDoesNotGenerateAlerts() throws InterruptedException {
+        MockRealTimeStrategy realTimeStrategy = new MockRealTimeStrategy(false);
+        healthDataProcessor = new HealthDataProcessor(outputStrategy, Arrays.asList(realTimeStrategy));
+
+        Patient mockPatient = new Patient(1);
+        healthDataProcessor.onDataAdded(mockPatient);
+
+        boolean alertsReceived = outputStrategy.awaitAlerts(1, TimeUnit.SECONDS);
+        assertFalse(alertsReceived, "No alerts should have been received");
+        assertEquals(0, outputStrategy.getAlerts().size());
+    }
+
+    @Test
+    void testMultipleRealTimeStrategiesGenerateAlerts() throws InterruptedException {
+        MockRealTimeStrategy realTimeStrategy1 = new MockRealTimeStrategy(true);
+        MockRealTimeStrategy realTimeStrategy2 = new MockRealTimeStrategy(true);
+        healthDataProcessor = new HealthDataProcessor(outputStrategy, Arrays.asList(realTimeStrategy1, realTimeStrategy2));
+
+        Patient mockPatient = new Patient(1);
+        outputStrategy.resetLatch(2);
+        healthDataProcessor.onDataAdded(mockPatient);
+
+        boolean alertsReceived = outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
+        assertTrue(alertsReceived, "Alerts were not received in the expected time");
+
+        assertEquals(2, outputStrategy.getAlerts().size());
+    }
+
+    private void addDummyDataToPatient(Patient patient) {
+        patient.addRecord(100.0, "ECG", System.currentTimeMillis());
+        patient.addRecord(120.0, "BloodPressure", System.currentTimeMillis());
+        patient.addRecord(90.0, "OxygenSaturation", System.currentTimeMillis());
+    }
+
+    @Test
+    void testInitializationWithNullRealTimeStrategies() throws InterruptedException {
         healthDataProcessor = new HealthDataProcessor(outputStrategy, null);
 
-        // Create a mock patient and add it to the data storage
         Patient mockPatient = new Patient(1);
-        DataStorage.getDataStorageInstance().addPatientData(mockPatient.getPatientId(), 80.0, "MockData", System.currentTimeMillis());
+        addDummyDataToPatient(mockPatient);
+        healthDataProcessor.onDataAdded(mockPatient);
 
-        // Wait for the periodic check to run
-        TimeUnit.SECONDS.sleep(16); // Wait for the periodic check interval
-
-        // Verify the alert
+        outputStrategy.resetLatch(1);
+        boolean alertsReceived = outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
+        assertTrue(alertsReceived, "Alerts were not received in the expected time");
         assertEquals(1, outputStrategy.getAlerts().size());
-        assertTrue(outputStrategy.getAlerts().get(0).contains("Mock Periodic Condition"));
     }
 }

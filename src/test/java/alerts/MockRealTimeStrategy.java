@@ -14,7 +14,7 @@ public class MockRealTimeStrategy implements StrategyPattern {
     @Override
     public Alert checkAlert(Patient patient) {
         if (shouldGenerateAlert) {
-            return new Alert(String.valueOf(patient.getPatientId()), "Mock RealTime Condition", System.currentTimeMillis(), 1);
+            return new Alert(String.valueOf(patient.getPatientId()), "Mock RealTime Condition", System.currentTimeMillis(), 0);
         }
         return null;
     }

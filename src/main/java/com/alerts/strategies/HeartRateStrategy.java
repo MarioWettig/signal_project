@@ -28,7 +28,7 @@ public class HeartRateStrategy implements StrategyPattern {
         double average=0;
 
         List<PatientRecord> record= patient.getRecords(lastUploaded.getTimestamp()-6000,lastUploaded.getTimestamp());
-        System.out.println(record.size());
+        //System.out.println(record.size());
         if (record.size()>5){
             for (int i = 0; i < record.size()-1; i++) {
                 if (record.get(i).getRecordType().equals("ECG")){
