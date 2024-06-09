@@ -18,7 +18,7 @@ public class TestOutputStrategy implements AlertOutputStrategy {
     public void send(String message) {
         alerts.add(message);
         latch.countDown();
-        System.out.println("Alert sent: " + message);
+        //System.out.println("Alert sent: " + message);
     }
 
     public List<String> getAlerts() {

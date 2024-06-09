@@ -91,7 +91,6 @@ public class HealthDataSimulator {
         scheduleTasksForPatients(patientIds);
     }
 
-
     /**
      * Parses the command line arguments to set simulation parameters.
      *
