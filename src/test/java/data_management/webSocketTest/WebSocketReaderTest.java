@@ -36,7 +36,7 @@ public class WebSocketReaderTest {
     @Test
     public void testWebSocketReader() throws Exception {
         DataStorage.resetInstance();
-        DataStorage dataStorage = DataStorage.getInstance();
+        DataStorage dataStorage = DataStorage.getDataStorageInstance();
         WebSocketReader reader = new WebSocketReader("ws://localhost:8080");
 
         Thread readerThread = new Thread(() -> reader.readData(dataStorage));

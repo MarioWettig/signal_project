@@ -39,7 +39,7 @@ import java.util.ArrayList;
  * and demonstration purposes in various environments.
  *
  *
- * @author: mariowettig
+ * @author: mariowettig & lucabighignoli
  */
 public class HealthDataSimulator {
 
@@ -51,7 +51,7 @@ public class HealthDataSimulator {
     private static final Random random = new Random();
 
 
-    public static DataStorage storage = DataStorage.getInstance();
+    public static DataStorage storage = DataStorage.getDataStorageInstance();
     private static String pathBase = "src/assets/DataFiles/";
     private static int port;
     private static DataReader readingStrategy;
@@ -65,8 +65,7 @@ public class HealthDataSimulator {
         this.scheduler = scheduler;
     }
 
-
-    public static HealthDataSimulator getHealthDataSimulator(int patientCount, ScheduledExecutorService scheduler,
+    public static HealthDataSimulator getHealthDataSimulatorInstance(int patientCount, ScheduledExecutorService scheduler,
                                                              OutputStrategy outputStrategy) {
         if (instance == null) {
             instance = new HealthDataSimulator(patientCount, scheduler, outputStrategy);
@@ -78,15 +77,17 @@ public class HealthDataSimulator {
         instance = null;
     }
 
+    public void setReadingStrategy(DataReader readingStrategy) {
+        this.readingStrategy = readingStrategy;
+    }
 
-    public static void main(String[] args) throws IOException {
-        parseArguments(args);
-
-        scheduler = Executors.newScheduledThreadPool(patientCount * 4);
-
+    /**
+     * Starts the health data simulator, called via the main of another class
+     *
+     */
+    public void start() {
         List<Integer> patientIds = initializePatientIds(patientCount);
         Collections.shuffle(patientIds); // Randomize the order of patient IDs
-
         scheduleTasksForPatients(patientIds);
     }
 
@@ -202,7 +203,7 @@ public class HealthDataSimulator {
         BloodSaturationDataGenerator bloodSaturationDataGenerator = new BloodSaturationDataGenerator(patientCount, storage);
         BloodPressureDataGenerator bloodPressureDataGenerator = new BloodPressureDataGenerator(patientCount, storage);
         BloodLevelsDataGenerator bloodLevelsDataGenerator = new BloodLevelsDataGenerator(patientCount, storage);
-        AlertGenerator alertGenerator = new AlertGenerator(patientCount);
+        //AlertGenerator alertGenerator = new AlertGenerator(patientCount);
 
 
         for (int patientId : patientIds) {
@@ -210,7 +211,7 @@ public class HealthDataSimulator {
             scheduleTask(() -> bloodSaturationDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.SECONDS);
             scheduleTask(() -> bloodPressureDataGenerator.generate(patientId, outputStrategy), 1, TimeUnit.MINUTES);
             scheduleTask(() -> bloodLevelsDataGenerator.generate(patientId, outputStrategy), 2, TimeUnit.MINUTES);
-            scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
+            //scheduleTask(() -> alertGenerator.generate(patientId, outputStrategy), 20, TimeUnit.SECONDS);
         }
     }
 
@@ -225,4 +226,19 @@ public class HealthDataSimulator {
     private static void scheduleTask(Runnable task, long period, TimeUnit timeUnit) {
         scheduler.scheduleAtFixedRate(task, random.nextInt(5), period, timeUnit);
     }
+
+
+
+    public static void main(String[] args) throws IOException {
+        parseArguments(args);
+
+        scheduler = Executors.newScheduledThreadPool(patientCount * 4);
+
+        List<Integer> patientIds = initializePatientIds(patientCount);
+        Collections.shuffle(patientIds); // Randomize the order of patient IDs
+
+        scheduleTasksForPatients(patientIds);
+    }
+
+
 }

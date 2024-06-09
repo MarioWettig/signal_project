@@ -3,13 +3,12 @@ package com.alerts.strategies;
 import com.alerts.alerts.Alert;
 import com.alerts.factories.AlertFactory;
 import com.alerts.factories.BloodPressureAlertFactory;
-import com.alerts.factories.ECGAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 import java.util.List;
 
-public class BloodPressureStrategy implements StrateyPattern {
+public class BloodPressureStrategy implements StrategyPattern {
     AlertFactory factory;
     @Override
     public Alert checkAlert(Patient patient) {
@@ -29,7 +28,7 @@ public class BloodPressureStrategy implements StrateyPattern {
         return null;
     }
 
-    private boolean trendAlert(List<PatientRecord> list,PatientRecord last) {
+    private boolean trendAlert(List<PatientRecord> list, PatientRecord last) {
         if (list.size()<3) return false;
         double[] values= new double[]{last.getMeasurementValue(),0,0};
         int countValues=1;

@@ -35,7 +35,7 @@ public class TextFileReaderTest {
         }
 
         DataStorage.resetInstance();
-        dataStorage = DataStorage.getInstance();
+        dataStorage = DataStorage.getDataStorageInstance();
         textFileReader = new TextFileReader(tempFile.getAbsolutePath());
         textFileReader.readData(dataStorage);
 

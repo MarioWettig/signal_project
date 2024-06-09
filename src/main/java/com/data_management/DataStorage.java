@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.alerts.AlertGenerator;
+import com.health_processor.DataListener;
 
 /**
  * Manages storage and retrieval of patient data within a healthcare monitoring
@@ -15,8 +16,8 @@ import com.alerts.AlertGenerator;
 public class DataStorage {
 
     private static DataStorage instance;
-
     private Map<Integer, Patient> patientMap; // Stores patient objects indexed by their unique patient ID.
+    private List<DataListener> listeners;
 
     /**
      * Constructs a new instance of DataStorage, initializing the underlying storage
@@ -31,7 +32,7 @@ public class DataStorage {
      *
      * @return the singleton instance of DataStorage
      */
-    public static synchronized DataStorage getInstance() {
+    public static synchronized DataStorage getDataStorageInstance() {
         if (instance == null) {
             instance = new DataStorage();
         }
@@ -42,6 +43,15 @@ public class DataStorage {
         instance = null;
     }
 
+    public void addDataListener(DataListener listener) {
+        listeners.add(listener);
+    }
+
+    private void notifyListeners(Patient patient) {
+        for (DataListener listener : listeners) {
+            listener.onDataAdded(patient);
+        }
+    }
 
     /**
      * Adds or updates patient data in the storage.
@@ -63,6 +73,7 @@ public class DataStorage {
             patientMap.put(patientId, patient);
         }
         patient.addRecord(measurementValue, recordType, timestamp);
+        notifyListeners(patient);
     }
 
     /**

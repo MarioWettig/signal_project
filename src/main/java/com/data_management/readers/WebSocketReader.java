@@ -52,7 +52,6 @@ public class WebSocketReader implements DataReader {
     public void processMessage(String message, DataStorage dataStorage) {
         System.out.println("Client: Received message: " + message);
         String[] parts = message.split(",");
-        System.out.println(Arrays.toString(parts));
         if (parts.length == 4) {
             int patientId = Integer.parseInt(parts[0].trim());
             double measurementValue = Double.parseDouble(parts[1].trim());

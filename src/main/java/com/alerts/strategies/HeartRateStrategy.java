@@ -2,14 +2,13 @@ package com.alerts.strategies;
 
 import com.alerts.alerts.Alert;
 import com.alerts.factories.AlertFactory;
-import com.alerts.factories.BloodOxygenAlertFactory;
 import com.alerts.factories.ECGAlertFactory;
 import com.data_management.Patient;
 import com.data_management.PatientRecord;
 
 import java.util.List;
 
-public class HeartRateStrategy implements StrateyPattern {
+public class HeartRateStrategy implements StrategyPattern {
     AlertFactory factory;
 
 

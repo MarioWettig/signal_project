@@ -9,7 +9,7 @@ import com.cardio_generator.outputs.OutputStrategy;
  * this class implements PatientDataGenerator and therefore it is a generator
  * It simulates alerts being triggered and resolved, and outputs them using the provided OutputStrategy.
  *
- * @author MarioWettig
+ * @author ?
  */
 public class AlertGenerator implements PatientDataGenerator {
 

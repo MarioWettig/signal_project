@@ -17,14 +17,14 @@ class DataStorageTest {
     @BeforeEach
     void setUp() {
         DataStorage.resetInstance();
-        storage = DataStorage.getInstance();
+        storage = DataStorage.getDataStorageInstance();
     }
 
     @Test
     public void testDataStorageSingleton(){
-        DataStorage dataStorage = DataStorage.getInstance();
+        DataStorage dataStorage = DataStorage.getDataStorageInstance();
         assertNotNull(dataStorage);
-        DataStorage dataStorage2 = DataStorage.getInstance();
+        DataStorage dataStorage2 = DataStorage.getDataStorageInstance();
         assertEquals(dataStorage, dataStorage2);
     }
 

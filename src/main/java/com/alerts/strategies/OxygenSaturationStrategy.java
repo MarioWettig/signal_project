@@ -8,7 +8,7 @@ import com.data_management.PatientRecord;
 
 import java.util.List;
 
-public class OxygenSaturationStrategy implements  StrateyPattern{
+public class OxygenSaturationStrategy implements StrategyPattern {
     AlertFactory factory;
 
 
