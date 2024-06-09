@@ -43,11 +43,6 @@ public class HeartRateStrategy implements StrateyPattern {
                 }
             }
         }
-
-
-
-        // check for the interval variation of
-
         return null;
     }
 }
