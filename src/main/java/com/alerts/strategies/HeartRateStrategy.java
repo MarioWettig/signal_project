@@ -28,6 +28,7 @@ public class HeartRateStrategy implements StrategyPattern {
         double average=0;
 
         List<PatientRecord> record= patient.getRecords(lastUploaded.getTimestamp()-6000,lastUploaded.getTimestamp());
+        System.out.println(record.size());
         if (record.size()>5){
             for (int i = 0; i < record.size()-1; i++) {
                 if (record.get(i).getRecordType().equals("ECG")){
@@ -35,7 +36,7 @@ public class HeartRateStrategy implements StrategyPattern {
                     average+=record.get(i).getMeasurementValue();
                 }
             }
-            if (ECG_values<4){
+            if (ECG_values>4){
                 if (Math.abs(currentValue-average/ECG_values)>anomaly) {
                     factory= new ECGAlertFactory();
                     return factory.createAlert(String.valueOf(patient.getPatientId()),"Irregular Heart Rate", lastUploaded.getTimestamp(), 0);

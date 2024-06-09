@@ -40,7 +40,7 @@ public class BloodPressureStrategy implements StrategyPattern {
             }
         }
         if (countValues>2){
-            return ((values[0]-values[1]>10 && values[1]-values[2]>10) || (values[0]-values[1]<-10 && values[1]-values[2]<-10));
+            return ((values[0]-values[1]>9 && values[1]-values[2]>9) || (values[0]-values[1]<-9 && values[1]-values[2]<-9));
         } else
             return false;
     }

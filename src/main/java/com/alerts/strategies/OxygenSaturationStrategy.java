@@ -37,7 +37,7 @@ public class OxygenSaturationStrategy implements StrategyPattern {
                     max=record.get(i).getMeasurementValue();
                 }
             }
-        } if (condition && lastUploaded.getMeasurementValue()-max>5) {
+        } if (condition && max- lastUploaded.getMeasurementValue()>5) {
             factory= new BloodOxygenAlertFactory();
             return factory.createAlert(String.valueOf(patient.getPatientId()),"Saturation drop", lastUploaded.getTimestamp(), 1);
         }
