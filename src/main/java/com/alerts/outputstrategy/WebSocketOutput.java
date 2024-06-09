@@ -7,7 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class WebSocketOutput implements AlertOutputStrategy {
-    private WebSocketClient webSocketClient;
+    public WebSocketClient webSocketClient;
     private String serverUri;
 
     public WebSocketOutput(String serverUri) {
