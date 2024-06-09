@@ -9,9 +9,10 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AlertManagerTest {
     private TestOutputStrategy outputStrategy;
@@ -19,18 +20,19 @@ public class AlertManagerTest {
 
     @BeforeEach
     void setUp() {
-        outputStrategy = new TestOutputStrategy();
+        outputStrategy = new TestOutputStrategy(1);
         alertManager = new AlertManager(outputStrategy);
     }
 
     @Test
-    void testProcessHighPriorityAlert() {
+    void testProcessHighPriorityAlert() throws InterruptedException {
         Alert highPriorityAlert = new Alert("patient1", "High Priority Condition", System.currentTimeMillis(), 1);
 
         alertManager.processAlert(highPriorityAlert);
+        outputStrategy.awaitAlerts();
 
         assertEquals(1, outputStrategy.getAlerts().size());
-        assertEquals(highPriorityAlert.getCondition(), outputStrategy.getAlerts().get(0).getCondition());
+        assertTrue(outputStrategy.getAlerts().get(0).contains("High Priority Condition"));
     }
 
     @Test
@@ -41,13 +43,23 @@ public class AlertManagerTest {
         Alert highPriorityAlert2 = new Alert(patientId, "High Priority Condition", timestamp + 1000, 1);
 
         alertManager.processAlert(highPriorityAlert1);
-        alertManager.processAlert(highPriorityAlert2);
+        outputStrategy.awaitAlerts();
 
+        outputStrategy.resetLatch(1);
+        alertManager.processAlert(highPriorityAlert2);
+        try {
+            outputStrategy.awaitAlerts();
+            fail("Expected timeout waiting for suppressed alert");
+        } catch (RuntimeException e) {
+            // Expected timeout
+        }
         assertEquals(1, outputStrategy.getAlerts().size());
 
-        TimeUnit.SECONDS.sleep(30); // Wait for the reset interval
+        TimeUnit.SECONDS.sleep(10);
 
+        outputStrategy.resetLatch(1);
         alertManager.processAlert(highPriorityAlert2);
+        outputStrategy.awaitAlerts();
 
         assertEquals(2, outputStrategy.getAlerts().size());
     }
@@ -57,47 +69,40 @@ public class AlertManagerTest {
         Alert lowPriorityAlert = new Alert("patient1", "Low Priority Condition", System.currentTimeMillis(), -1);
 
         alertManager.processAlert(lowPriorityAlert);
+        outputStrategy
 
         assertEquals(1, outputStrategy.getAlerts().size());
-        assertEquals(lowPriorityAlert.getCondition(), outputStrategy.getAlerts().get(0).getCondition());
+        assertEquals(lowPriorityAlert.getCondition(), outputStrategy.getAlerts().get(0));
     }
 
     // Custom output strategy to capture alerts for testing
     static class TestOutputStrategy implements AlertOutputStrategy {
-        private final List<Alert> alerts = new ArrayList<>();
+        private final List<String> alerts = new ArrayList<>();
+        private CountDownLatch latch;
+
+        public TestOutputStrategy(int expectedAlertCount) {
+            this.latch = new CountDownLatch(expectedAlertCount);
+        }
 
         public void send(String message) {
-            if (message.startsWith("ALERT:")) {
-                parseBasicAlert(message);
-            } else if (message.startsWith("HIGH PRIORITY:")) {
-                parseHighPriorityAlert(message);
+            alerts.add(message);
+            latch.countDown();
+            System.out.println("Alert sent: " + message);
+        }
+
+        public List<String> getAlerts() {
+            return alerts;
+        }
+
+        public void awaitAlerts() throws InterruptedException {
+            if (!latch.await(11, TimeUnit.SECONDS)) { // Adding a timeout to avoid infinite wait
+                throw new RuntimeException("Timeout waiting for alerts");
             }
         }
 
-        private void parseBasicAlert(String message) {
-            String[] parts = message.split(", ");
-            String patientId = parts[0].split(" ")[2];
-            String condition = parts[1];
-            long timestamp = Long.parseLong(parts[2].split(" at ")[1]);
-            alerts.add(new Alert(patientId, condition, timestamp, 0)); // Assuming default priority 0 for basic alerts
-        }
-
-        private void parseHighPriorityAlert(String message) {
-            String[] parts = message.split(", ");
-            String condition = parts[0].substring(15); // Skip "HIGH PRIORITY: "
-            String patientId = parts[1].split(" ")[2];
-
-
-            long timestamp = Long.parseLong(parts[2].split("at ")[1]);
-
-            System.out.println(timestamp + " " + condition + " " + patientId);
-
-            alerts.add(new Alert(patientId, condition, timestamp, 1));
-            System.out.println(alerts.size());
-        }
-
-        public List<Alert> getAlerts() {
-            return alerts;
+        public void resetLatch(int expectedAlertCount) {
+            this.latch = new CountDownLatch(expectedAlertCount);
+            System.out.println("Latch reset with count: " + expectedAlertCount); // Added for debugging
         }
     }
 }
