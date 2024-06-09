@@ -1,7 +1,6 @@
 package com.alerts.alerts;
 
 import com.alerts.outputstrategy.AlertOutputStrategy;
-import com.alerts.outputstrategy.GlobalOutput;
 
 // Represents an alert
 public class Alert {

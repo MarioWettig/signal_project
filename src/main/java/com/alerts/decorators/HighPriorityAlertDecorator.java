@@ -5,7 +5,6 @@ import com.alerts.outputstrategy.AlertOutputStrategy;
 
 public class HighPriorityAlertDecorator extends AlertDecorator {
 
-
     public HighPriorityAlertDecorator(Alert decoratedAlert) {
         super(decoratedAlert);
     }

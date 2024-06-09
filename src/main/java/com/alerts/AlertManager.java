@@ -26,7 +26,7 @@ public class AlertManager {
 
     public void processAlert(Alert alert) {
         executorService.submit(() -> {
-            System.out.println("Processing alert for patient: " + alert.getPatientId()); // Debug log
+            //System.out.println("Processing alert for patient: " + alert.getPatientId()); // Debug log
             if (alert.getPriority() == 1) {
                 synchronized (lastHighPriorityAlertTime) {
                     Long lastAlertTime = lastHighPriorityAlertTime.get(alert.getPatientId());
@@ -35,7 +35,7 @@ public class AlertManager {
                         lastHighPriorityAlertTime.put(alert.getPatientId(), currentTime);
                         sendAlert(alert);
                     } else {
-                        System.out.println("High priority alert suppressed for patient: " + alert.getPatientId()); // Debug log
+                        //System.out.println("High priority alert suppressed for patient: " + alert.getPatientId()); // Debug log
                     }
                 }
             } else {
