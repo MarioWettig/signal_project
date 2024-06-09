@@ -86,12 +86,14 @@ public class AlertManagerTest {
             String[] parts = message.split(", ");
             String condition = parts[0].substring(15); // Skip "HIGH PRIORITY: "
             String patientId = parts[1].split(" ")[2];
-            System.out.println(130);
+
 
             long timestamp = Long.parseLong(parts[2].split("at ")[1]);
 
-            System.out.println(timestamp);
+            System.out.println(timestamp + " " + condition + " " + patientId);
+
             alerts.add(new Alert(patientId, condition, timestamp, 1));
+            System.out.println(alerts.size());
         }
 
         public List<Alert> getAlerts() {
