@@ -88,7 +88,7 @@ public class AlertManagerTest {
             String patientId = parts[1].split(" ")[2];
             System.out.println(130);
 
-            long timestamp = Long.parseLong(parts[2].split(" at ")[1]);
+            long timestamp = Long.parseLong(parts[2].split("at ")[1]);
 
             System.out.println(timestamp);
             alerts.add(new Alert(patientId, condition, timestamp, 1));

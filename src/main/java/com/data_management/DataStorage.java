@@ -76,7 +76,9 @@ public class DataStorage {
             patientMap.put(patientId, patient);
         }
         patient.addRecord(measurementValue, recordType, timestamp);
-        notifyListeners(patient);
+        if (listeners != null) {
+            notifyListeners(patient);
+        }
     }
 
     /**
