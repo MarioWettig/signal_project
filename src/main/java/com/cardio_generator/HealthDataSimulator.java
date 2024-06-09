@@ -47,7 +47,7 @@ public class HealthDataSimulator {
 
     private static int patientCount = 50; // Default number of patients
     private static ScheduledExecutorService scheduler;
-    private static OutputStrategy outputStrategy = new ConsoleOutputStrategy(); // Default output strategy
+    private static OutputStrategy outputStrategy; // Default output strategy
     private static final Random random = new Random();
 
 
@@ -59,15 +59,17 @@ public class HealthDataSimulator {
     /**
      * singlton constructor
      */
-    private HealthDataSimulator() {}
+    private HealthDataSimulator(int patientCount, ScheduledExecutorService scheduler, OutputStrategy outputStrategy) {
+        this.patientCount = patientCount;
+        this.outputStrategy = outputStrategy;
+        this.scheduler = scheduler;
+    }
 
-    /**
-     * singlton getInstacne method
-     *
-     */
-    public static synchronized HealthDataSimulator getInstance() {
+
+    public static HealthDataSimulator getHealthDataSimulator(int patientCount, ScheduledExecutorService scheduler,
+                                                             OutputStrategy outputStrategy) {
         if (instance == null) {
-            instance = new HealthDataSimulator();
+            instance = new HealthDataSimulator(patientCount, scheduler, outputStrategy);
         }
         return instance;
     }

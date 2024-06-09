@@ -20,6 +20,13 @@ class DataStorageTest {
         storage = DataStorage.getInstance();
     }
 
+    @Test
+    public void testDataStorageSingleton(){
+        DataStorage dataStorage = DataStorage.getInstance();
+        assertNotNull(dataStorage);
+        DataStorage dataStorage2 = DataStorage.getInstance();
+        assertEquals(dataStorage, dataStorage2);
+    }
 
     @Test
     void testAddAndGetRecords() {
