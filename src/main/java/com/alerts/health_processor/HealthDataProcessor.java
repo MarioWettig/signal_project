@@ -1,4 +1,4 @@
-package com.health_processor;
+package com.alerts.health_processor;
 
 import com.alerts.AlertManager;
 import com.alerts.alerts.Alert;
@@ -19,7 +19,6 @@ public class HealthDataProcessor implements DataListener {
     private AlertManager alertManager;
     private ScheduledExecutorService scheduler;
 
-
     public HealthDataProcessor(AlertOutputStrategy outputStrategy, List<StrategyPattern> realTimeStrategies, List<StrategyPattern> periodicStrategies) {
         this.alertManager = new AlertManager(outputStrategy);
 
@@ -31,7 +30,6 @@ public class HealthDataProcessor implements DataListener {
         this.scheduler = Executors.newScheduledThreadPool(1);
         startPeriodicChecks();
     }
-
 
     private void initializeRealTimeStrategies() {
         realTimeStrategies = new ArrayList<>();

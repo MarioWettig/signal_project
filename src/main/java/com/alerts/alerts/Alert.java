@@ -33,7 +33,7 @@ public class Alert {
     public int getPriority() {return priority;}
 
     public void sendAlert(AlertOutputStrategy outputStrategy) {
-        String message = "ALERT: patient " + patientId + ": " + condition + " at " + timestamp;
+        String message = "ALERT: patient " + patientId + ", " + condition + ", at " + timestamp;
         outputStrategy.send(message);
     }
 }

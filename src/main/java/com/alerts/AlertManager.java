@@ -16,7 +16,7 @@ public class AlertManager {
     private AlertOutputStrategy outputStrategy;
     private ExecutorService executorService;
     private Map<String, Long> lastHighPriorityAlertTime;
-    private static final long HIGH_PRIORITY_ALERT_INTERVAL = TimeUnit.SECONDS.toMillis(30); // Example interval of 30 seconds
+    private static final long HIGH_PRIORITY_ALERT_INTERVAL = TimeUnit.SECONDS.toMillis(10);
 
     public AlertManager(AlertOutputStrategy outputStrategy) {
         this.outputStrategy = outputStrategy;
@@ -48,9 +48,9 @@ public class AlertManager {
 
     private Alert applyDecorators(Alert alert) {
         if (alert.getPriority() == -1) {
-            alert = new RepeatedAlertDecorator(alert); // Example: 3 consecutive checks for low priority
+            alert = new RepeatedAlertDecorator(alert);
         } else if (alert.getPriority() == 1) {
-            alert = new HighPriorityAlertDecorator(alert); // Example: Repeat 3 times for high priority
+            alert = new HighPriorityAlertDecorator(alert);
         }
         return alert;
     }

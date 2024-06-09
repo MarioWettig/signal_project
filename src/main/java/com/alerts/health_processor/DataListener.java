@@ -1,4 +1,4 @@
-package com.health_processor;
+package com.alerts.health_processor;
 
 import com.data_management.Patient;
 

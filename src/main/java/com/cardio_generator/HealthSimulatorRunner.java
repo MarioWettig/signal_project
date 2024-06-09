@@ -1,13 +1,12 @@
 package com.cardio_generator;
 
 import com.alerts.outputstrategy.ConsoleOutput;
-import com.cardio_generator.outputs.ConsoleOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
 import com.data_management.DataStorage;
 import com.data_management.readers.DataReader;
 import com.data_management.readers.WebSocketReader;
-import com.health_processor.HealthDataProcessor;
+import com.alerts.health_processor.HealthDataProcessor;
 
 import java.io.IOException;
 import java.util.concurrent.Executors;

@@ -12,7 +12,7 @@ public class HighPriorityAlertDecorator extends AlertDecorator {
 
     @Override
     public void sendAlert(AlertOutputStrategy outputStrategy) {
-        String message = "HIGH PRIORITY: " + getCondition() + " for patient " + getPatientId() + " at " + getTimestamp();
+        String message = "HIGH PRIORITY: " + getCondition() + ", for patient " + getPatientId() + ", at " + getTimestamp();
         outputStrategy.send(message);
     }
 }

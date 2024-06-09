@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class RepeatedAlertDecorator extends AlertDecorator {
     private static Map<String, Integer> alertCountMap = new HashMap<>();
-    private int requiredConsecutiveChecks = 3;
+    private int requiredConsecutiveChecks = 2;
 
     public RepeatedAlertDecorator(Alert decoratedAlert) {
         super(decoratedAlert);
