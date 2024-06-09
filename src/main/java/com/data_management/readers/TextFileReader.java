@@ -36,8 +36,4 @@ public class TextFileReader implements DataReader {
         }
     }
 
-    public void readString(String message) throws IOException {
-
-    }
-
 }

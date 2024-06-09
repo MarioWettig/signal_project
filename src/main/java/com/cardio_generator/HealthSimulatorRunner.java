@@ -1,10 +1,12 @@
 package com.cardio_generator;
 
 import com.alerts.outputstrategy.ConsoleOutput;
+import com.cardio_generator.outputs.FileOutputStrategy;
 import com.cardio_generator.outputs.OutputStrategy;
 import com.cardio_generator.outputs.WebSocketOutputStrategy;
 import com.data_management.DataStorage;
 import com.data_management.readers.DataReader;
+import com.data_management.readers.TextFileReader;
 import com.data_management.readers.WebSocketReader;
 import com.alerts.health_processor.HealthDataProcessor;
 
@@ -17,6 +19,7 @@ public class HealthSimulatorRunner {
 
     /**
      * using this class to run the project, the HealthDataProcessor encapsulates the health evaluation and alert management system
+     * using websocket as output
      *
      * @param args
      */
