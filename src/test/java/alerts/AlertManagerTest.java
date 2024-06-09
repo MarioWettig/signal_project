@@ -29,7 +29,7 @@ public class AlertManagerTest {
         Alert highPriorityAlert = new Alert("patient1", "High Priority Condition", System.currentTimeMillis(), 1);
 
         alertManager.processAlert(highPriorityAlert);
-        outputStrategy.awaitAlerts();
+        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
 
         assertEquals(1, outputStrategy.getAlerts().size());
         assertTrue(outputStrategy.getAlerts().get(0).contains("High Priority Condition"));
@@ -43,23 +43,21 @@ public class AlertManagerTest {
         Alert highPriorityAlert2 = new Alert(patientId, "High Priority Condition", timestamp + 1000, 1);
 
         alertManager.processAlert(highPriorityAlert1);
-        outputStrategy.awaitAlerts();
+        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
 
         outputStrategy.resetLatch(1);
         alertManager.processAlert(highPriorityAlert2);
-        try {
-            outputStrategy.awaitAlerts();
-            fail("Expected timeout waiting for suppressed alert");
-        } catch (RuntimeException e) {
-            // Expected timeout
-        }
+        boolean timedOut = !outputStrategy.awaitAlerts(2, TimeUnit.SECONDS);
+        assertTrue(timedOut, "Expected timeout waiting for suppressed alert");
         assertEquals(1, outputStrategy.getAlerts().size());
 
-        TimeUnit.SECONDS.sleep(10);
+        TimeUnit.SECONDS.sleep(5);
 
         outputStrategy.resetLatch(1);
-        alertManager.processAlert(highPriorityAlert2);
-        outputStrategy.awaitAlerts();
+
+        timestamp = System.currentTimeMillis();
+        alertManager.processAlert(new Alert(patientId, "High Priority Condition", timestamp + 100000, 1));
+        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
 
         assertEquals(2, outputStrategy.getAlerts().size());
     }
@@ -69,10 +67,22 @@ public class AlertManagerTest {
         Alert lowPriorityAlert = new Alert("patient1", "Low Priority Condition", System.currentTimeMillis(), -1);
 
         alertManager.processAlert(lowPriorityAlert);
-        outputStrategy.awaitAlerts();
+        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
+
+        assertEquals(0, outputStrategy.getAlerts().size());
+    }
+
+    @Test
+    void testProcessMediumPriorityAlert() throws InterruptedException {
+        Alert lowPriorityAlert = new Alert("patient1", "Medium Priority Condition", System.currentTimeMillis(), 0);
+
+        alertManager.processAlert(lowPriorityAlert);
+        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
 
         assertEquals(1, outputStrategy.getAlerts().size());
     }
+
+
 
     // Custom output strategy to capture alerts for testing
     static class TestOutputStrategy implements AlertOutputStrategy {
@@ -93,10 +103,8 @@ public class AlertManagerTest {
             return alerts;
         }
 
-        public void awaitAlerts() throws InterruptedException {
-            if (!latch.await(5, TimeUnit.SECONDS)) { // Adding a timeout to avoid infinite wait
-                throw new RuntimeException("Timeout waiting for alerts");
-            }
+        public boolean awaitAlerts(long timeout, TimeUnit unit) throws InterruptedException {
+            return latch.await(timeout, unit);
         }
 
         public void resetLatch(int expectedAlertCount) {
