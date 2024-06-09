@@ -44,6 +44,9 @@ public class DataStorage {
     }
 
     public void addDataListener(DataListener listener) {
+        if (listeners == null) {
+            listeners = new ArrayList<>();
+        }
         listeners.add(listener);
     }
 

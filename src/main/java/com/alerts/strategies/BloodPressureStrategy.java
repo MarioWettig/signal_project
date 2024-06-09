@@ -17,12 +17,12 @@ public class BloodPressureStrategy implements StrategyPattern {
 
         if (( lastUploaded.getRecordType().equals("SystolicPressure") && (currentValue > 180 || currentValue < 90)) ||  (lastUploaded.getRecordType().equals("DiastolicPressure") && ((currentValue > 120 || currentValue < 60)))){
                 factory= new BloodPressureAlertFactory();
-                return factory.createAlert(String.valueOf(patient.getPatientId()),"Critical Threshold Alert pressure", lastUploaded.getTimestamp());
+                return factory.createAlert(String.valueOf(patient.getPatientId()),"Critical Threshold pressure", lastUploaded.getTimestamp(), 1);
         }
 
         if (trendAlert(patient.getRecords(System.currentTimeMillis()-6000,System.currentTimeMillis()),lastUploaded)){
             factory= new BloodPressureAlertFactory();
-            return factory.createAlert(String.valueOf(patient.getPatientId()),"Trend Alert", lastUploaded.getTimestamp());
+            return factory.createAlert(String.valueOf(patient.getPatientId()),"Trend Alert", lastUploaded.getTimestamp(), -1);
         }
 
         return null;

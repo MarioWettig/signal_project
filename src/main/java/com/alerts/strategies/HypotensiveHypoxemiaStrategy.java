@@ -53,7 +53,7 @@ public class HypotensiveHypoxemiaStrategy implements StrategyPattern {
         if (foundSystolic && foundSaturation){
             if (saturation<92 && systolic<90) {
                 factory= new HypotensiveHypoxemiaAlertFactory();
-                return factory.createAlert(String.valueOf(patient.getPatientId()),"Hypotensive Hypoxemia Alert", lastUploaded.getTimestamp());
+                return factory.createAlert(String.valueOf(patient.getPatientId()),"Hypotensive Hypoxemia", lastUploaded.getTimestamp(),1);
             }
         }
 

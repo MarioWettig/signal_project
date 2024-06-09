@@ -20,7 +20,7 @@ public class HeartRateStrategy implements StrategyPattern {
 
         if (currentValue<0 || currentValue>100) {
             factory= new ECGAlertFactory();
-            return factory.createAlert(String.valueOf(patient.getPatientId()),"Abnormal Heart Rate Alert", lastUploaded.getTimestamp());
+            return factory.createAlert(String.valueOf(patient.getPatientId()),"Abnormal Heart Rate", lastUploaded.getTimestamp(),1);
         }
 
         int ECG_values=0;
@@ -38,7 +38,7 @@ public class HeartRateStrategy implements StrategyPattern {
             if (ECG_values<4){
                 if (Math.abs(currentValue-average/ECG_values)>anomaly) {
                     factory= new ECGAlertFactory();
-                    return factory.createAlert(String.valueOf(patient.getPatientId()),"Irregular Heart Rate Alert", lastUploaded.getTimestamp());
+                    return factory.createAlert(String.valueOf(patient.getPatientId()),"Irregular Heart Rate", lastUploaded.getTimestamp(), 0);
                 }
             }
         }

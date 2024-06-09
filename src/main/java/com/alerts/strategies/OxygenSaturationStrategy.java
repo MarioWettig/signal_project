@@ -22,7 +22,7 @@ public class OxygenSaturationStrategy implements StrategyPattern {
         if (currentValue<92) {
             factory= new BloodOxygenAlertFactory();
             // if this is triggered, we do not investigate the saturation drop alert
-            return factory.createAlert(String.valueOf(patient.getPatientId()),"Low Saturation Alert", lastUploaded.getTimestamp());
+            return factory.createAlert(String.valueOf(patient.getPatientId()),"Low Saturation", lastUploaded.getTimestamp(), 0);
         }
 
 
@@ -39,7 +39,7 @@ public class OxygenSaturationStrategy implements StrategyPattern {
             }
         } if (condition && lastUploaded.getMeasurementValue()-max>5) {
             factory= new BloodOxygenAlertFactory();
-            return factory.createAlert(String.valueOf(patient.getPatientId()),"Saturation drop Alert", lastUploaded.getTimestamp());
+            return factory.createAlert(String.valueOf(patient.getPatientId()),"Saturation drop", lastUploaded.getTimestamp(), 1);
         }
         return null;
     }

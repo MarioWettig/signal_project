@@ -50,7 +50,7 @@ public class WebSocketReader implements DataReader {
     }
 
     public void processMessage(String message, DataStorage dataStorage) {
-        System.out.println("Client: Received message: " + message);
+        //System.out.println("Client: Received message: " + message);
         String[] parts = message.split(",");
         if (parts.length == 4) {
             int patientId = Integer.parseInt(parts[0].trim());
@@ -58,7 +58,7 @@ public class WebSocketReader implements DataReader {
             String recordType = parts[2].trim();
             long timestamp = Long.parseLong(parts[3].trim());
             dataStorage.addPatientData(patientId, measurementValue, recordType, timestamp);
-            System.out.println("Client: Data added to DataStorage");
+            //System.out.println("Client: Data added to DataStorage");
         }
     }
 }
