@@ -63,16 +63,6 @@ public class AlertManagerTest {
     }
 
     @Test
-    void testProcessLowPriorityAlert() throws InterruptedException {
-        Alert lowPriorityAlert = new Alert("patient1", "Low Priority Condition", System.currentTimeMillis(), -1);
-
-        alertManager.processAlert(lowPriorityAlert);
-        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
-
-        assertEquals(0, outputStrategy.getAlerts().size());
-    }
-
-    @Test
     void testProcessMediumPriorityAlert() throws InterruptedException {
         Alert lowPriorityAlert = new Alert("patient1", "Medium Priority Condition", System.currentTimeMillis(), 0);
 
@@ -82,6 +72,15 @@ public class AlertManagerTest {
         assertEquals(1, outputStrategy.getAlerts().size());
     }
 
+    @Test
+    void testProcessLowPriorityAlert() throws InterruptedException {
+        Alert lowPriorityAlert = new Alert("patient1", "Low Priority Condition", System.currentTimeMillis(), -1);
+
+        alertManager.processAlert(lowPriorityAlert);
+        outputStrategy.awaitAlerts(5, TimeUnit.SECONDS);
+
+        assertEquals(0, outputStrategy.getAlerts().size());
+    }
 
 
     // Custom output strategy to capture alerts for testing
@@ -109,7 +108,7 @@ public class AlertManagerTest {
 
         public void resetLatch(int expectedAlertCount) {
             this.latch = new CountDownLatch(expectedAlertCount);
-            System.out.println("Latch reset with count: " + expectedAlertCount); // Added for debugging
+            System.out.println("Latch reset with count: " + expectedAlertCount);
         }
     }
 }
