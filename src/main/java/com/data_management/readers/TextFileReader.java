@@ -10,8 +10,6 @@ public class TextFileReader implements DataReader {
 
     private String filePath;
 
-    public TextFileReader(){}
-
     public TextFileReader(String filePath){this.filePath = filePath;}
 
     public void setFilePath(String filePath) {

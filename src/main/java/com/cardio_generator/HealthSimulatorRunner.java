@@ -15,6 +15,13 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class HealthSimulatorRunner {
 
+    /**
+     * using this class to run the project, the HealthDataProcessor encapsulates the health evaluation and alert management system
+     *
+     * @param args
+     */
+
+
     public static void main(String[] args) {
         try {
             int patientCount = 50;
